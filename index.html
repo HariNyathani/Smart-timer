@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Timer Workspace</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Open+Sans:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="theme-toggle" id="masterThemeToggle" aria-label="Toggle theme" role="button" tabindex="0">
+    <div class="toggle-circle" id="masterToggleCircle">🌙</div>
+  </div>
+
+  <nav class="shell-nav">
+    <button class="shell-tab active" data-app="timer">Timer</button>
+    <button class="shell-tab" data-app="stopwatch">Stopwatch</button>
+    <button class="shell-tab" data-app="pomodoro">Pomodoro</button>
+  </nav>
+
+  <section id="timerApp" class="app-section active">
+    <div class="container">
+      <section class="card" id="timerCard">
+        <div class="inputs">
+          <div class="input-group">
+            <label for="timer-hours">Hours</label>
+            <input type="number" id="timer-hours" min="0" placeholder="0" />
+          </div>
+          <div class="input-group">
+            <label for="timer-minutes">Minutes</label>
+            <input type="number" id="timer-minutes" min="0" max="59" placeholder="0" />
+          </div>
+          <div class="input-group">
+            <label for="timer-seconds">Seconds</label>
+            <input type="number" id="timer-seconds" min="0" max="59" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="presets">
+          <button type="button" data-preset="105">1.45 min</button>
+          <button type="button" data-preset="120">2 min</button>
+          <button type="button" data-preset="300">5 min</button>
+          <button type="button" data-preset="600">10 min</button>
+          <button type="button" data-preset="1800">30 min</button>
+        </div>
+
+        <div class="sound-row">
+          <label for="timer-soundSelect">Alert Sound</label>
+          <div class="sound-select-wrapper">
+            <select id="timer-soundSelect">
+              <option value="soft2">Soft 2</option>
+              <option value="loud">Loud</option>
+              <option value="alarm">Alarm</option>
+              <option value="timer-off">Timer off</option>
+              <option value="timer">Timer Beep</option>
+              <option value="normal">Normal</option>
+              <option value="soft1">Soft 1</option>
+            </select>
+            <button id="timer-previewBtn" class="secondary-btn preview-btn" type="button" title="Preview Sound">
+              ▶
+            </button>
+          </div>
+        </div>
+
+        <div class="sound-row">
+          <label for="timer-volumeControl">Volume</label>
+          <input type="range" id="timer-volumeControl" min="0" max="1" step="0.1" value="0.5" />
+        </div>
+
+        <div style="margin-top: 24px;">
+          <button id="timer-startBtn" class="primary-btn" type="button">Start Timer</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="timer-popup" class="popup hidden">
+      <div class="popup-header">
+        <button id="timer-closePopup" type="button" aria-label="Close">✕</button>
+      </div>
+      <div id="timer-timeDisplay">00:00:00</div>
+      <div class="popup-controls">
+        <button id="timer-pauseBtn" type="button" aria-label="Pause/Play">▶</button>
+        <button id="timer-restartBtn" type="button" aria-label="Restart">⟳</button>
+      </div>
+      <div class="resize-hint">Drag to resize</div>
+    </div>
+  </section>
+
+  <section id="stopwatchApp" class="app-section">
+    <div class="container">
+      <section class="card" id="stopwatchCard">
+
+        <div id="sw-mainTimeDisplay" class="main-time-display">00:00:00</div>
+
+        <div class="controls-row">
+          <button type="button" id="sw-startStopBtn" class="primary-btn">Start</button>
+          <button type="button" id="sw-resetBtn" class="secondary-btn">Reset</button>
+        </div>
+        <button type="button" id="sw-lapBtn" class="secondary-btn full-width-btn" disabled>Lap</button>
+
+        <div class="lap-list-container">
+          <label>Laps</label>
+          <ul id="sw-lapList" class="lap-list"></ul>
+        </div>
+
+        <button id="sw-popOutBtn" class="pip-btn" type="button">Pop Out (PiP)</button>
+      </section>
+    </div>
+
+    <div id="sw-popup" class="popup hidden">
+      <div class="popup-header">
+        <button id="sw-closePopup" type="button" aria-label="Close">✕</button>
+      </div>
+      <div id="sw-timeDisplay">00:00:00</div>
+      <div class="popup-controls">
+        <button id="sw-pipStartStopBtn" type="button" aria-label="Play/Pause">▶</button>
+        <button id="sw-pipResetBtn" type="button" aria-label="Reset">⟳</button>
+      </div>
+      <div class="resize-hint">Drag to resize</div>
+    </div>
+  </section>
+
+  <section id="pomodoroApp" class="app-section">
+    <div class="container">
+      <section class="card" id="pomoCard">
+        <div class="pomodoro-nav">
+          <button id="pomo-btnPomo" class="active">Pomodoro</button>
+          <button id="pomo-btnShort">Short Break</button>
+          <button id="pomo-btnLong">Long Break</button>
+        </div>
+
+        <div id="pomo-mainTimeDisplay" class="main-time-display">25:00</div>
+
+        <div class="controls-row" style="flex-direction: column; gap: 16px;">
+          <button id="pomo-startStopBtn" class="primary-btn" type="button">Start</button>
+          <button id="pomo-popOutBtn" class="pip-btn" type="button">Pop Out (PiP)</button>
+        </div>
+
+        <div class="task-section">
+          <div class="task-header">
+            <span>Tasks</span>
+            <button id="pomo-showTaskFormBtn" class="add-task-btn" type="button">+ Add Task</button>
+          </div>
+
+          <ul id="pomo-taskList" class="task-list"></ul>
+
+          <div id="pomo-taskForm" class="task-form" style="display:none;">
+            <input type="text" id="pomo-taskNameInput" placeholder="What are you working on?" />
+            
+            <div class="pomo-est-group">
+              <label for="pomo-taskPomosInput">Est Pomodoros</label>
+              <input type="number" id="pomo-taskPomosInput" min="1" value="1" />
+            </div>
+
+            <div class="task-form-actions">
+              <button id="pomo-cancelTaskBtn" type="button" style="background:transparent; color:var(--muted);">Cancel</button>
+              <button id="pomo-saveTaskBtn" type="button" style="background:var(--primary); color:#fff;">Save</button>
+            </div>
+          </div>
+
+          <div class="summary-bar">
+            <div>Pomos:<span id="pomo-pomoCountDisplay">0/0</span></div>
+            <div>Finish Time:<span id="pomo-finishTimeDisplay">--:--</span></div>
+          </div>
+        </div>
+
+        <button id="pomo-advancedToggleBtn" class="advanced-toggle-btn" type="button">
+          <span id="pomo-advancedIcon">▶</span> Advanced
+        </button>
+
+        <div id="pomo-advancedSettings" class="advanced-settings-panel" style="display:none;">
+          <div class="sound-row" style="margin-top:0;">
+            <label for="pomo-soundSelect">Phase Complete Sound</label>
+            <select id="pomo-soundSelect">
+              <option value="loud">Loud</option>
+              <option value="timer">Timer Beep</option>
+              <option value="normal">Normal</option>
+              <option value="soft1">Soft 1</option>
+              <option value="soft2" selected>Soft 2</option>
+            </select>
+          </div>
+
+          <div class="sound-row">
+            <label for="pomo-volumeControl">Volume</label>
+            <input type="range" id="pomo-volumeControl" min="0" max="1" step="0.1" value="0.5" />
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="pomo-popup" class="popup hidden">
+      <div class="popup-header">
+        <button id="pomo-closePopup" type="button" aria-label="Close">✕</button>
+      </div>
+      <div id="pomo-timeDisplay">25:00</div>
+      <div class="popup-controls">
+        <button id="pomo-pipStartStopBtn" type="button" aria-label="Play/Pause">▶</button>
+        <button id="pomo-pipSkipBtn" type="button" aria-label="Skip Phase" style="font-size:14px; font-weight:bold;">⏭</button>
+      </div>
+      <div class="resize-hint">Drag to resize</div>
+    </div>
+  </section>
+  
+  <div class="creator-tag">by @harinyathani</div>
+  <script type="module">
+    import { initTimer } from './timer-module.js';
+    import { initStopwatch } from './stopwatch-module.js';
+    import { initPomodoro } from './pomodoro-module.js';
+    
+    
+
+    const tabs = document.querySelectorAll('.shell-tab');
+    const sections = {
+      timer: document.getElementById('timerApp'),
+      stopwatch: document.getElementById('stopwatchApp'),
+      pomodoro: document.getElementById('pomodoroApp')
+    };
+
+    let initialized = {
+      timer: false,
+      stopwatch: false,
+      pomodoro: false
+    };
+
+    function showApp(name) {
+      Object.entries(sections).forEach(([key, el]) => {
+        el.classList.toggle('active', key === name);
+      });
+
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.app === name);
+      });
+
+      if (!initialized[name]) {
+        if (name === 'timer') initTimer(sections.timer);
+        if (name === 'stopwatch') initStopwatch(sections.stopwatch);
+        if (name === 'pomodoro') initPomodoro(sections.pomodoro);
+        initialized[name] = true;
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.app;
+        showApp(target);
+      });
+    });
+
+    const masterToggle = document.getElementById('masterThemeToggle');
+    const masterCircle = document.getElementById('masterToggleCircle');
+
+    function updateMasterIcon() {
+      masterCircle.textContent = document.body.classList.contains('light-mode') ? '☀' : '🌙';
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      updateMasterIcon();
+    }
+
+    masterToggle.addEventListener('click', toggleTheme);
+    masterToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleTheme();
+      }
+    });
+
+    updateMasterIcon();
+    initTimer(sections.timer);
+    initialized.timer = true;
+  </script>
+</body>
+</html>
