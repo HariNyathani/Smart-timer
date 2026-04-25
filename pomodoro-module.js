@@ -156,22 +156,24 @@ export function initPomodoro(root) {
   function handlePhaseComplete() {
     if (currentMode === 'pomodoro') {
       totalCompletedPomos++;
+
+      // 1. Update Task Progress (independent of breaks)
       if (tasks.length > 0 && currentTaskIndex < tasks.length) {
         tasks[currentTaskIndex].completed++;
+        // Auto-advance to the next task if this one is finished
         if (tasks[currentTaskIndex].completed >= tasks[currentTaskIndex].target) {
           currentTaskIndex++;
-          if (currentTaskIndex < tasks.length) {
-            setMode('longBreak');
-          } else {
-            setMode('pomodoro');
-          }
-        } else {
-          setMode('shortBreak');
         }
+      }
+
+      // 2. The True Pomodoro Logic: Every 4th work session triggers a long break
+      if (totalCompletedPomos > 0 && totalCompletedPomos % 4 === 0) {
+        setMode('longBreak');
       } else {
         setMode('shortBreak');
       }
     } else {
+      // Break is over, back to work
       setMode('pomodoro');
     }
     renderTasks();
@@ -302,34 +304,51 @@ export function initPomodoro(root) {
     tasks.forEach(t => { totalTargetPomos += t.target; });
     pomoCountDisplay.textContent = `${totalCompletedPomos}/${totalTargetPomos}`;
 
-    if (tasks.length === 0 || currentTaskIndex >= tasks.length) {
+    // Calculate total uncompleted Pomodoros across all tasks
+    let remainingPomos = 0;
+    for (let i = currentTaskIndex; i < tasks.length; i++) {
+      let uncompleted = tasks[i].target - tasks[i].completed;
+      if (uncompleted > 0) remainingPomos += uncompleted;
+    }
+
+    if (remainingPomos === 0) {
       finishTimeDisplay.textContent = '--:--';
       return;
     }
 
+    // Mathematical simulation of the true Pomodoro cycle
     let remainingSeconds = timeLeft;
-    let activeTask = tasks[currentTaskIndex];
-    let unstartedPomosInActive = activeTask.target - activeTask.completed;
+    let pomosLeftToWork = remainingPomos;
 
     if (currentMode === 'pomodoro') {
-      unstartedPomosInActive -= 1;
-    }
-    if (unstartedPomosInActive < 0) unstartedPomosInActive = 0;
-
-    remainingSeconds += unstartedPomosInActive * TIMES.pomodoro;
-    let shortBreaksLeft = unstartedPomosInActive;
-
-    if (currentMode === 'shortBreak') {
-      shortBreaksLeft -= 1;
-    }
-    if (shortBreaksLeft < 0) shortBreaksLeft = 0;
-
-    remainingSeconds += shortBreaksLeft * TIMES.shortBreak;
-
-    for (let i = currentTaskIndex + 1; i < tasks.length; i++) {
-      remainingSeconds += TIMES.longBreak;
-      remainingSeconds += tasks[i].target * TIMES.pomodoro;
-      remainingSeconds += (tasks[i].target - 1) * TIMES.shortBreak;
+      pomosLeftToWork -= 1; // The active timer covers 1 work session
+      let virtualCount = totalCompletedPomos + 1;
+      
+      // Add the break that follows this current active session
+      if (pomosLeftToWork > 0) {
+        remainingSeconds += (virtualCount % 4 === 0) ? TIMES.longBreak : TIMES.shortBreak;
+      }
+      
+      // Simulate the rest of the queue
+      for (let i = 0; i < pomosLeftToWork; i++) {
+        remainingSeconds += TIMES.pomodoro;
+        virtualCount++;
+        // Add trailing breaks unless it's the absolute last task
+        if (i < pomosLeftToWork - 1) {
+          remainingSeconds += (virtualCount % 4 === 0) ? TIMES.longBreak : TIMES.shortBreak;
+        }
+      }
+    } else {
+      // If currently on a break, all remaining pomodoros are strictly in the future
+      let virtualCount = totalCompletedPomos;
+      for (let i = 0; i < pomosLeftToWork; i++) {
+        remainingSeconds += TIMES.pomodoro;
+        virtualCount++;
+        // Add trailing breaks unless it's the absolute last task
+        if (i < pomosLeftToWork - 1) {
+          remainingSeconds += (virtualCount % 4 === 0) ? TIMES.longBreak : TIMES.shortBreak;
+        }
+      }
     }
 
     const finishDate = new Date(Date.now() + remainingSeconds * 1000);
@@ -392,6 +411,7 @@ export function initPomodoro(root) {
   };
 
   closePopupBtn.onclick = () => {
+    stopSound();
     if (pipWindowRef) {
       pipWindowRef.close();
     } else {

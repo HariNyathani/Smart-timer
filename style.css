@@ -606,6 +606,23 @@ body.light-mode .toggle-circle {
   transform: translateX(20px);
 }
 
+/* --- MAIN APP LOGO --- */
+.app-logo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 80px; /* Adjust this number to make it bigger or smaller */
+  height: auto;
+  z-index: 100;
+  border-radius: 8px; /* Optional: smooths the corners if your logo is square */
+  user-select: none;
+  transition: transform 0.2s ease, filter 0.3s ease;
+}
+
+.app-logo:hover {
+  transform: scale(1.05); /* Adds a subtle pop when hovered */
+}
+
 /* --- POPUPS / PiP FALLBACK --- */
 .popup {
   position: fixed;
@@ -718,9 +735,9 @@ body.light-mode .toggle-circle {
 .creator-tag {
   position: fixed;
   bottom: 20px;
-  left: 24px;
+  left: 20px;
   font-family: 'Caveat', cursive;
-  font-size: 24px;
+  font-size: 20px;
   color: var(--muted);
   opacity: 0.5;
   z-index: 9999;
@@ -747,8 +764,10 @@ body.popup-mode {
 
 body.popup-mode .container,
 body.popup-mode .theme-toggle,
-body.popup-mode .shell-nav {
-  display: none;
+body.popup-mode .shell-nav,
+body.popup-mode .creator-tag,
+body.popup-mode .app-logo {
+  display: none !important;
 }
 
 body.popup-mode .popup {
