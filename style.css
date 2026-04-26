@@ -610,8 +610,8 @@ body.light-mode .toggle-circle {
 .app-logo {
   position: absolute;
   top: 10px;
-  left: 10px;
-  width: 80px; /* Adjust this number to make it bigger or smaller */
+  left: 6px;
+  width: 100px; /* Adjust this number to make it bigger or smaller */
   height: auto;
   z-index: 100;
   border-radius: 8px; /* Optional: smooths the corners if your logo is square */
