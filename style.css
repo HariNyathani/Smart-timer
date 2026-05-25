@@ -182,8 +182,8 @@ body {
 }
 
 .label {
-  margin: 0 0 20px;
-  font-size: 14px;
+  margin: 0 0 12px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--muted);
@@ -206,16 +206,17 @@ body {
 .inputs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
 .input-group, .sound-row {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.sound-row { margin-top: 24px; }
+.sound-row { margin-top: 16px; }
 
 .input-group label, .sound-row label {
   font-size: 13px;
@@ -289,9 +290,10 @@ input[type=number]::-webkit-inner-spin-button:hover {
 /* --- BUTTONS --- */
 .presets, .controls-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 14px;
+  margin-bottom: 0;
 }
 
 .controls-row { width: 100%; }
@@ -855,3 +857,339 @@ body.light-mode .card {
     0 0 22px rgba(0, 0, 0, 0.08) !important;
 }
 
+/* --- RESPONSIVE SIDEBAR GRID & EXPANSION --- */
+@media (min-width: 900px) {
+  #timerApp .container {
+    width: min(1000px, calc(100% - 32px)) !important;
+  }
+  .timer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 899px) {
+  .timer-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+  }
+}
+
+/* --- STANDARDIZED HEIGHT & ALIGNMENT FOR TIMER & DASHBOARD CARDS --- */
+#timerCard, #dashboardCard {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+  justify-content: flex-start;
+  padding: 24px !important;
+}
+
+/* Top padding so inputs don't touch the card border */
+#timerCard .card-content {
+  padding-top: 4px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 0;
+}
+
+/* Anchor ONLY the bottom buttons — everything else stays at top */
+#timerCard > div[style*="margin-top: auto"],
+#dashboardCard > div[style*="margin-top: auto"] {
+  margin-top: auto !important;
+  padding-top: 16px;
+}
+
+/* --- PREMIUM UT DASHBOARD STYLING --- */
+#dashboardCard {
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.dashboard-grid, .stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+.dashboard-stat-box {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.dashboard-stat-box:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.15);
+}
+
+.dashboard-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+
+.dashboard-stat-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+body:not(.light-mode) .dashboard-stat-value {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+/* --- MILESTONE PROGRESS BAR --- */
+.dashboard-progress-section, .shift-progress-container {
+  margin: 14px 0 0 !important;
+}
+
+/* --- FOOTER DISCLAIMER NOTE --- */
+.disclaimer-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin: 12px auto;
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 90%;
+  padding: 0;
+}
+
+body.light-mode .disclaimer-text {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.progress-track-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 4px 0 24px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 999px;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary) 0%, #06b6d4 100%);
+  border-radius: 999px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+}
+
+.progress-milestone {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.progress-milestone::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.milestone-85 {
+  left: 85%;
+  background: #ffaa00;
+  box-shadow: 0 0 8px #ffaa00;
+}
+
+.milestone-85::after {
+  color: #ffaa00 !important;
+}
+
+.milestone-100 {
+  left: 100%;
+  background: #00ffaa;
+  box-shadow: 0 0 8px #00ffaa;
+}
+
+.milestone-100::after {
+  color: #00ffaa !important;
+}
+
+/* --- OVERTIME PULSING STATE --- */
+.overtime-active {
+  color: #ff4d4d !important;
+  text-shadow: 0 0 15px rgba(255, 77, 77, 0.8) !important;
+  animation: pulse-overtime 1.2s ease-in-out infinite !important;
+}
+
+@keyframes pulse-overtime {
+  0% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 77, 77, 0.6);
+  }
+  50% {
+    opacity: 0.6;
+    text-shadow: 0 0 20px rgba(255, 77, 77, 0.9);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 77, 77, 0.6);
+  }
+}
+
+/* --- RAINBOW GRADIENT FOR 100% UT MILESTONE --- */
+.rainbow-fill {
+  background: linear-gradient(90deg, #ff007f 0%, #ffaa00 25%, #00ffaa 50%, #00f0ff 75%, #7f00ff 100%) !important;
+  background-size: 200% auto !important;
+  animation: rainbow-shift 3s linear infinite !important;
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.6) !important;
+}
+
+@keyframes rainbow-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* --- GOLD GLOW ANIMATION FOR 85% UT MILESTONE --- */
+.milestone-glow {
+  animation: gold-glow-pulse 3s ease-in-out !important;
+}
+
+@keyframes gold-glow-pulse {
+  0% {
+    box-shadow: var(--card-neon-glow) !important;
+  }
+  30% {
+    box-shadow: 
+      0 16px 38px rgba(0, 0, 0, 0.6),       
+      0 0 25px rgba(255, 170, 0, 0.85),   
+      0 0 50px rgba(255, 170, 0, 0.4),   
+      0 0 75px rgba(255, 170, 0, 0.2) !important;
+    border-color: #ffaa00 !important;
+  }
+  100% {
+    box-shadow: var(--card-neon-glow) !important;
+  }
+}
+
+/* --- RECENT TASK LOG STYLING --- */
+.dashboard-recent-tasks {
+  margin-top: 24px;
+}
+
+.recent-list {
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+}
+
+.recent-list li {
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  border-bottom: 1px solid var(--input-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recent-list li:last-child {
+  border-bottom: none;
+}
+
+.recent-placeholder {
+  color: var(--muted) !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  justify-content: center !important;
+  font-style: italic;
+}
+
+/* --- REVERT SESSION BUTTON --- */
+.revert-btn {
+  width: 54px;
+  flex-shrink: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  background: var(--button-bg);
+  color: var(--muted);
+  border: 1px solid var(--input-border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.revert-btn:hover:not(:disabled) {
+  background: var(--button-bg-hover);
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.revert-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* --- RESET DAILY STATS — DANGER ZONE --- */
+.reset-stats-btn {
+  background: rgba(255, 0, 0, 0.05) !important;
+  border: 1px solid #ff4444 !important;
+  color: #ff4444 !important;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.2) !important;
+}
+
+.reset-stats-btn:hover {
+  background: rgba(255, 0, 0, 0.12) !important;
+  box-shadow: 0 0 18px rgba(255, 68, 68, 0.45) !important;
+  transform: translateY(-1px);
+}
